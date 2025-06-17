@@ -15,6 +15,7 @@ def main():
         return
     except PermissionError:
         print(f"Error: Not given permission to access '{args.file}'.")
+        return
 
     lines = [line if line.endswith('\n') else line + '\n' for line in lines]
 
