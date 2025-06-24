@@ -3,11 +3,12 @@ import json
 import os
 
 def load_products():
-    # if products.json exists, read and return its contents
-    if os.path.exists("products.json"):
+    # using EAFP principle to load products from products.json
+    try:
         with open("products.json", "r") as file:
             return json.load(file)
-    return []  # return an empty list if file doesn't exist
+    except FileNotFoundError:
+        return []
 
 def save_products(products):
     # save the list of products to products.json
