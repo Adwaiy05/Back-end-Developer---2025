@@ -9,7 +9,7 @@ def load_products():
             return json.load(file)
     except FileNotFoundError:
         return []
-
+    
 def save_products(products):
     # save the list of products to products.json
     with open("products.json", "w") as file:
@@ -192,19 +192,34 @@ def view_cart():
 
     if not cart:
         print("Cart is empty.")
-    else:
-        print("Current Cart:")
-        total = 0.0
+        return
+    
+    print("Current Cart:")
+    total = 0.0
+    validation_errors = [] # a list to collect validation errors
 
-        # go through each item in cart and print its details
-        for item in cart:
-            quantity = item["quantity"]
-            name = item["name"]
-            price = item["price"]
+    # go through each item in cart and print its details
+    for item in cart:
+        quantity = item["quantity"]
+        name = item["name"]
+        price = item["price"]
+        # check if quantity is a valid positive integer and if not, add to validation errors list
+        if not isinstance(quantity, int) or quantity <= 0:
+            validation_errors.append(f"Invalid quantity of '{name}' : 'quantity' must be a positive integer.")
+        # check if price is a valid number and if not, add to validation errors list
+        if not isinstance(price, (int,float)) or price < 0:
+            validation_errors.append(f"Invalid price of '{name}' : 'price' must be a non-negative float/integer.")
+        # if there are no validation items, continue with calculation
+        if not validation_errors:
             print(f"{quantity} x {name} @ {price} each")
             total = total + (price * quantity)
 
-        print(f"Total: {round(total, 2)}")
+    # if validation errors are found, raise an error and compile all errors into one message
+    if validation_errors:
+        raise ValueError("Validation Errors:\n" + "\n".join(validation_errors))
+    
+    print(f"Total: {round(total, 2)}")
+    return total 
 
 def checkout():
     cart = load_cart()
